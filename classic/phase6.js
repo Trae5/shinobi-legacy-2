@@ -103,6 +103,7 @@ function restoreEyePowers(sv, a6) {
 /* ---------------- injury application ---------------- */
 function applyInjury(sv, kind, side, cause) {
   const a6 = a6Of(sv);
+  try { console.log("[injhook] apply", kind, side, "key:", sv && (sv.name || sv.charName)); } catch {}
   if (!a6 || !SIDE_OK(side)) return null;
   if (kind === "arm" && a6.arm) return null;
   if (kind === "eye" && a6.eye) return null;
@@ -432,6 +433,7 @@ function partChip(kind, rec) {
     hh("div", { style: { fontSize: ".68rem", letterSpacing: ".12em" } }, sub));
 }
 function renderInjuries() {
+  try { const _a = a6Of(SAVE6); console.log("[injpanel] render save6=", SAVE6 && (SAVE6.name || SAVE6.charName), "eye=", _a && _a.eye && _a.eye.side, "arm=", _a && _a.arm && _a.arm.side, "hist=", _a && _a.history.length); } catch {}
   const body = $q("#p6body"); if (!body) return;
   const sv = SAVE6; const a6 = a6Of(sv); if (!a6) { body.append(hh("div", { class: "p1title" }, "No character loaded.")); return; }
   body.textContent = "";
@@ -523,7 +525,21 @@ function worldNotice() {
 window.__SL2injOpen = openInjuries;
 function devTest() {
   try {
-    if (!new URLSearchParams(location.search).get("injtest")) return;
+      try {
+    if (new URLSearchParams(location.search).get("injdbg")) {
+      const dump = () => {
+        try {
+          const raw = JSON.parse(localStorage.getItem("sl2_phase1_v1") || "null");
+          const keys = raw && raw.chars ? Object.keys(raw.chars) : [];
+          const ent = raw && raw.chars && raw.chars.injtest;
+          let hp = null; try { const g = getGame(); hp = g && g.player ? g.player.hp : null; } catch {}
+          console.log("[injdbg]", JSON.stringify({ keys, a6: ent && ent.a6 || null, save6: SAVE6 && (SAVE6.name || SAVE6.charName || "noname"), save6null: SAVE6 === null, hp }));
+        } catch (e) { console.log("[injdbg] err", e && e.message); }
+      };
+      dump(); setInterval(dump, 5000);
+    }
+  } catch {}
+if (!new URLSearchParams(location.search).get("injtest")) return;
     let tries = 0;
     const t = setInterval(() => {
       tries++;
