@@ -276,6 +276,7 @@ addEventListener('keydown', e => {
   if (e.code === 'Digit1') setCam(0);
   if (e.code === 'Digit2') setCam(1);
   if (e.code === 'Digit3') setCam(2);
+  if (e.code === 'KeyL') toggleCamLock();
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
 
@@ -296,6 +297,11 @@ const CAM_NAMES = ['FOLLOW', 'SHOULDER', 'CINEMATIC'];
 const toastEl = document.getElementById('camtoast');
 let toastT = 0;
 function toast(t) { toastEl.textContent = t; toastEl.classList.add('on'); toastT = performance.now(); }
+let camLockOn = false;
+function toggleCamLock() {
+  camLockOn = !camLockOn;
+  toast('CAMERA LOCK ' + (camLockOn ? 'ON' : 'OFF'));
+}
 function setCam(m) {
   cam.mode = m;
   if (m === 0) { cam.dist = 7.2; cam.pitch = 0.34; }
@@ -341,6 +347,7 @@ function tick() {
   npcs.forEach(n => animateShinobi(n, dt, 0));
 
   if (cam.mode === 2) cam.yaw += dt * 0.14;
+  else if (camLockOn) cam.yaw += angDiff(cam.yaw, hero.yaw + Math.PI) * Math.min(1, dt * 10);
   else if (moving && !dragging && performance.now() - cam.lastDrag > 2200 && cam.mode === 0) {
     cam.yaw += angDiff(cam.yaw, hero.yaw + Math.PI) * Math.min(1, dt * 0.9);
   }
