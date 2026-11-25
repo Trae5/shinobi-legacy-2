@@ -10,7 +10,7 @@ import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS
 /* Set this to the deployed arena server address when it goes live.
    Empty means the panel shows the offline state and the rest of
    the game runs exactly as it does today. */
-const SERVER_URL = "";
+const SERVER_URL = "wss://shinobi-legacy-2.onrender.com";
 
 let SAVE4 = null, sock = null, uiCb = null;
 function mChar() {
