@@ -6,7 +6,7 @@
    Sacrifice Awakening), rare restoration, injury record.
    Depends on phase1.js (helpers). Live hooks via window.__SL2*.
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook } from "./phase1.js?v=p1130";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook } from "./phase1.js?v=p1131";
 
 /* ---------------- state ---------------- */
 let SAVE6 = null;

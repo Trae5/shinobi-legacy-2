@@ -4,7 +4,7 @@
    Secret Organizations, Properties.
    Depends on phase1.js (helpers, mats store).
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, V_ui } from "./phase1.js?v=p1130";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, V_ui } from "./phase1.js?v=p1131";
 
 /* ---------- world store (same char object as phase 1) ---------- */
 let SAVE2 = null;
