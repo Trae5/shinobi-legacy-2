@@ -35,6 +35,9 @@ const SIDE_OK = (s) => s === "left" || s === "right";
 /* dojutsu treated as a PAIR when the player owns only that one eye power */
 const PAIRED_HINT = /sharingan|mangekyo|byakugan|tenseigan|ketsuryugan|custom/i;
 
+function getGame() {
+  try { const g = (window.SL && window.SL.game) || window.__SL2game; if (g) { try { window.__SL2game = g; } catch (e) {} } return g || null; } catch { return window.__SL2game || null; }
+}
 function curSave() {
   if (SAVE6) return SAVE6;
   const g = window.__SL2game;
@@ -249,7 +252,7 @@ function findRig(ent) {
 }
 function applyModelVisual(pl) {
   try {
-    const g = pl.game || window.__SL2game; if (!g || !g.player) return;
+    const g = pl.game || getGame(); if (!g || !g.player) return;
     const sv = saveOf(g.player); const a6 = a6Of(sv); if (!a6) return;
     const rig = findRig(g.player); if (!rig) return;
     for (const [kind, rec] of [["arm", a6.arm], ["eye", a6.eye]]) {
@@ -259,7 +262,7 @@ function applyModelVisual(pl) {
     }
   } catch {}
 }
-setInterval(() => { const g = window.__SL2game; if (g && g.player) applyModelVisual(g.player); }, 5000);
+setInterval(() => { const g = getGame(); if (g && g.player) applyModelVisual(g.player); }, 5000);
 
 /* ---------------- live hooks (called from game.js) ---------------- */
 window.__SL2lethal = function (pl) {
@@ -306,7 +309,7 @@ window.__SL2castGate = function (pl, id, t) {
 };
 window.__SL2kill = function (enemy) {
   try {
-    const g = window.__SL2game; if (!g || !g.player) return;
+    const g = getGame(); if (!g || !g.player) return;
     const sv = saveOf(g.player); const a6 = a6Of(sv); if (!a6) return;
     const hurt = !!(a6.arm || a6.eye);
     if (!hurt) return;
@@ -323,7 +326,7 @@ window.__SL2kill = function (enemy) {
 };
 
 /* ---------------- weapon hook: injury battle power ---------------- */
-try { setWeaponHook(() => { const g = window.__SL2game; const sv = g && g.player && saveOf(g.player); return sv ? powerPct(sv) : 0; }); } catch {}
+try { setWeaponHook(() => { const g = getGame(); const sv = g && g.player && saveOf(g.player); return sv ? powerPct(sv) : 0; }); } catch {}
 
 /* ---------------- restoration ---------------- */
 const RESTORE_REQ = { ryo: 2500000, jade: 60, beastClaw: 40, lv: 40, cdDays: 7 };
@@ -363,13 +366,13 @@ function mpBroadcast() {
   try {
     const sock = window.__SL2sock;
     if (sock && sock.readyState === 1) {
-      const sv = window.__SL2game && saveOf(window.__SL2game.player); const a6 = a6Of(sv);
+      const g = getGame(); const sv = g && g.player && saveOf(g.player); const a6 = a6Of(sv);
       if (a6) sock.send(JSON.stringify({ t: "inj", name: pName(), arm: a6.arm && !a6.arm.restored ? a6.arm.side : null, eye: a6.eye && !a6.eye.restored ? a6.eye.side : null }));
     }
   } catch {}
 }
 window.__SL2injState = function () {
-  const sv = window.__SL2game && saveOf(window.__SL2game.player); const a6 = a6Of(sv);
+  const g = getGame(); const sv = g && g.player && saveOf(g.player); const a6 = a6Of(sv);
   return a6 ? { arm: a6.arm && !a6.arm.restored ? a6.arm.side : null, eye: a6.eye && !a6.eye.restored ? a6.eye.side : null } : { arm: null, eye: null };
 };
 window.__SL2injPeer = function (m) { /* called by phase4 when a peer reports injuries */
@@ -524,18 +527,33 @@ function devTest() {
     let tries = 0;
     const t = setInterval(() => {
       tries++;
-      const g = window.__SL2game;
+      const g = getGame();
       if (g && g.player && window.__SL2lethal) {
         clearInterval(t);
         const ok = window.__SL2lethal(g.player);
         console.log("[injtest] lethal hook:", ok);
-        if (ok) setTimeout(() => { try { window.__SL2injOpen(window.__SL2game.player.profile); } catch (e) { console.log("[injtest] open fail", e && e.message); } }, 4200);
+        if (ok) setTimeout(() => { try { const gg = getGame(); window.__SL2injOpen(saveOf(gg.player)); } catch (e) { console.log("[injtest] open fail", e && e.message); } }, 4200);
       } else if (tries > 60) { clearInterval(t); console.log("[injtest] no game/player after 60s"); }
     }, 1000);
   } catch (e) { console.log("[injtest]", e && e.message); }
 }
 function boot() {
   devTest();
+  try {
+    if (new URLSearchParams(location.search).get("injtest2")) {
+      let tries = 0;
+      const t2 = setInterval(() => {
+        tries++;
+        const g = getGame();
+        if (g && g.player && window.__SL2lethal) {
+          clearInterval(t2);
+          const ok = window.__SL2lethal(g.player);
+          console.log("[injtest2] second lethal hook:", ok);
+          if (ok) setTimeout(() => { try { window.__SL2injOpen(saveOf(getGame().player)); } catch (e) {} }, 4200);
+        } else if (tries > 60) clearInterval(t2);
+      }, 1000);
+    }
+  } catch (e) {}
   try {
     document.addEventListener("keydown", (e) => {
       if (e.key === "b" || e.key === "B") {
