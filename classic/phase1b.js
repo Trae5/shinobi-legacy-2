@@ -3,7 +3,7 @@
    Systems: Training Simulator + Weapon Forging
    Depends on phase1.js (shared helpers, mats, battle hook).
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, V_ui } from "./phase1.js";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setTrainHook, V_ui } from "./phase1.js";
 
 /* ---------- player-side store (same save object as phase 1) ---------- */
 function trnChar() {
@@ -165,11 +165,13 @@ function gameMemory(host, t, cb) {
 }
 function finishTraining(t, score) {
   const c = trnChar();
-  const gain = Math.round((8 + pLv() * 1.1) * (score / 100) * (1 + score / 220));
+  const trainMult = 1 + TRAIN_HOOKS.reduce((a, f) => a + (f() || 0), 0);
+  const gain = Math.round((8 + pLv() * 1.1) * (score / 100) * (1 + score / 220) * trainMult);
   c.trn.xp[t.id] = (c.trn.xp[t.id] || 0) + Math.max(3, gain);
   c.trn.last[t.id] = Date.now();
   if (Math.random() < 0.3) { c.mats.ore += 1; }
   if (Math.random() < 0.14) { c.mats.scrollDust += 1; }
+  if (c.w2 && c.w2.counters) c.w2.counters.train++;
   p1save();
   toast(cap(t.id) + " training +" + Math.max(3, gain) + " xp");
   renderTraining();
@@ -226,6 +228,7 @@ function doForge(w) {
   c.fr.owned[w.id] = 0;
   if (!c.fr.eq) c.fr.eq = w.id;
   p1save();
+  if (c.w2 && c.w2.counters) c.w2.counters.forge++;
   toast(w.icon + " " + w.name + " forged! Quenched and sharp.");
   renderForge();
 }
@@ -240,6 +243,7 @@ function doUpgrade(w) {
   for (const k in cost) c.mats[k] -= cost[k];
   c.fr.owned[w.id] = p + 1;
   p1save();
+  if (c.w2 && c.w2.counters) c.w2.counters.forge++;
   toast(w.icon + " " + w.name + " +" + (p + 1) + "! Sparks fly off the anvil.");
   renderForge();
 }

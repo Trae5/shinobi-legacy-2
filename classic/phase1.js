@@ -114,8 +114,10 @@ const CSS = `
 /* ============================================================
    SHARED: status effects + turn-based trial combat engine
    ============================================================ */
-let WEAPON_HOOK = null;
-function setWeaponHook(fn) { WEAPON_HOOK = fn; }
+let WEAPON_HOOKS = [];
+let TRAIN_HOOKS = [];
+function setWeaponHook(fn) { if (!WEAPON_HOOKS.includes(fn)) WEAPON_HOOKS.push(fn); }
+function setTrainHook(fn) { if (!TRAIN_HOOKS.includes(fn)) TRAIN_HOOKS.push(fn); }
 function fxList() { return []; }
 function makeFx(kind, turns, val) { return { kind, turns, val }; }
 /* battle state: {php, pmax, ghp, gmax, gatk, turn, log[], fxP[], fxG[], sum, combo, over, win, flavor} */
@@ -127,7 +129,7 @@ function battleStart(species, guardianName, opts) {
   const b = bondLvl(bond.bond || 0);
   const sumBonus = species ? (0.25 + b * 0.05) : 0;
   const chBonus = chakraBattleBonus();
-  const wBonusX = WEAPON_HOOK ? WEAPON_HOOK() : 0;
+  const wBonusX = WEAPON_HOOKS.reduce((a, f) => a + (f() || 0), 0);
   const php = 60 + lv * 5;
   const pmax = php;
   const ghp = 80 + lv * 7 + (opts.gmul || 1) * 40;
@@ -203,7 +205,7 @@ function battleAct(b, action) {
   b.ghp -= pdmg;
   if (pdmg > 0) logAdd(b, note + " <b>-" + fmtN(pdmg) + "</b>", "good");
   else logAdd(b, note, "dim");
-  if (b.ghp <= 0) { b.over = true; b.win = true; logAdd(b, "The " + b.gname + " yields. Victory.", "good"); return true; }
+  if (b.ghp <= 0) { b.over = true; b.win = true; const wc = p1char(); if (wc.w2 && wc.w2.counters) wc.w2.counters.trial++; logAdd(b, "The " + b.gname + " yields. Victory.", "good"); return true; }
   /* guardian turn */
   const gStunned = b.fxG.some((f) => f.kind === "stun");
   let gdmg = 0;
@@ -266,6 +268,7 @@ function doHunt() {
       if (n >= FRAGS_NEED) out.push('<span class="good">The fragments form a whole contract scroll. <b>The ' + sp.name + " trial awaits.</b></span>");
       if (Math.random() < 0.35) { c.mats.ore++; c.mats.beastClaw++; }
       if (Math.random() < 0.12) { c.mats.jade++; out.push('<span class="good">Deep in the ruin: a vein of <b>jade</b>.</span>'); }
+      if (c.w2 && c.w2.counters) c.w2.counters.hunt++;
     } else {
       out.push('<span class="dim">Nothing new out there — but you bring back materials.</span>');
       c.mats.ore += 2; c.mats.scrollDust++;
@@ -476,6 +479,7 @@ function startDrill(e) {
       done = true; cancelAnimationFrame(raf);
       c.chm.xp[e.id] = (c.chm.xp[e.id] || 0) + gained;
       c.chm.drills[e.id] = Date.now();
+      if (c.w2 && c.w2.counters) c.w2.counters.focus++;
       const before = chmLvl(c.chm.xp[e.id] - gained).lvl, after = chmLvl(c.chm.xp[e.id]).lvl;
       if (after > before) toast(e.icon + " " + e.name + " mastery Lv " + after + "!");
       p1save();
@@ -595,4 +599,4 @@ function open(system, save, sfx) {
   rerender(CUR);
 }
 function closeP1() { const ov = $q("#p1ov"); if (ov) ov.remove(); TRIAL = null; }
-export { open, hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, V_ui };
+export { open, hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setTrainHook, V_ui };
