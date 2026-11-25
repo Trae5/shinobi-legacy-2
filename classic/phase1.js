@@ -32,8 +32,8 @@ const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 /* ---------- persistence ---------- */
 let ROOT = null;
 function p1load() {
-  try { ROOT = JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch { ROOT = null; }
-  if (!ROOT || typeof ROOT !== "object") ROOT = { v: P1V, chars: {} };
+  try { ROOT = JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch (e) { console.log("[p1load] PARSE FAIL", e && e.message); ROOT = null; }
+  if (!ROOT || typeof ROOT !== "object") { console.log("[p1load] FRESH ROOT — raw was:", localStorage.getItem(LS_KEY)); ROOT = { v: P1V, chars: {} }; }
   if (!ROOT.chars) ROOT.chars = {};
 }
 function charKey(save) {
@@ -55,7 +55,7 @@ function p1char(save) {
   c.mats = c.mats || { ore: 0, scrollDust: 0, beastClaw: 0, jade: 0 };
   return c;
 }
-function p1save() { try { localStorage.setItem(LS_KEY, JSON.stringify(ROOT)); } catch {} }
+function p1save() { try { const raw=localStorage.getItem(LS_KEY); console.log("[p1save] chars=", ROOT&&ROOT.chars?Object.keys(ROOT.chars):"(no root)", "hadStore=", raw?Object.keys((JSON.parse(raw)||{chars:{}}).chars||{}):"(empty)"); localStorage.setItem(LS_KEY, JSON.stringify(ROOT)); } catch(e) { console.log("[p1save] ERR", e && e.message); } }
 
 /* ---------- player context (passed from the menu) ---------- */
 let SAVE = null;
