@@ -55,7 +55,7 @@ function p1char(save) {
   c.mats = c.mats || { ore: 0, scrollDust: 0, beastClaw: 0, jade: 0 };
   return c;
 }
-function p1save() { try { const raw=localStorage.getItem(LS_KEY); console.log("[p1save] chars=", ROOT&&ROOT.chars?Object.keys(ROOT.chars):"(no root)", "hadStore=", raw?Object.keys((JSON.parse(raw)||{chars:{}}).chars||{}):"(empty)"); localStorage.setItem(LS_KEY, JSON.stringify(ROOT)); } catch(e) { console.log("[p1save] ERR", e && e.message); } }
+function p1save() { try { if (!ROOT) p1load(); const raw=localStorage.getItem(LS_KEY); console.log("[p1save] chars=", ROOT&&ROOT.chars?Object.keys(ROOT.chars):"(no root)", "hadStore=", raw?Object.keys((JSON.parse(raw)||{chars:{}}).chars||{}):"(empty)"); localStorage.setItem(LS_KEY, JSON.stringify(ROOT)); } catch(e) { console.log("[p1save] ERR", e && e.message); } }
 
 /* ---------- player context (passed from the menu) ---------- */
 let SAVE = null;
