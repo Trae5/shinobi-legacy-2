@@ -273,11 +273,6 @@ function animateShinobi(ch, dt, speed) {
 const keys = {};
 addEventListener('keydown', e => {
   keys[e.code] = true;
-  if (menuOpen) {
-    if (e.code === 'Escape') toggleMenu();
-    return;
-  }
-  if (e.code === 'Escape') { toggleMenu(); return; }
   if (e.code === 'Digit1') setCam(0);
   if (e.code === 'Digit2') setCam(1);
   if (e.code === 'Digit3') setCam(2);
@@ -336,7 +331,7 @@ function tick() {
 
   const ix = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
   const iz = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0);
-  const moving = menuOpen ? 0 : ((ix || iz) ? 1 : 0);
+  const moving = (ix || iz) ? 1 : 0;
   if (moving) {
     const fwd = new THREE.Vector3(-Math.sin(cam.yaw), 0, -Math.cos(cam.yaw));
     const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
@@ -351,11 +346,7 @@ function tick() {
   animateShinobi(hero, dt, moving);
   npcs.forEach(n => animateShinobi(n, dt, 0));
 
-  if (menuOpen) {
-    cam.yaw += dt * 0.075;
-    cam.dist += (9.8 - cam.dist) * Math.min(1, dt * 1.6);
-    cam.pitch += (0.26 - cam.pitch) * Math.min(1, dt * 1.6);
-  } else if (cam.mode === 2) cam.yaw += dt * 0.14;
+  if (cam.mode === 2) cam.yaw += dt * 0.14;
   else if (camLockOn) cam.yaw += angDiff(cam.yaw, hero.yaw + Math.PI) * Math.min(1, dt * 10);
   else if (moving && !dragging && performance.now() - cam.lastDrag > 2200 && cam.mode === 0) {
     cam.yaw += angDiff(cam.yaw, hero.yaw + Math.PI) * Math.min(1, dt * 0.9);
@@ -383,32 +374,4 @@ function tick() {
   }
   renderer.render(scene, camera);
 }
-
-/* ---------- main menu ---------- */
-const menuEl = document.getElementById('menu');
-const hudEl = document.getElementById('hud');
-const mtoastEl = document.getElementById('mtoast');
-let menuOpen = true, mtoastT = 0;
-function mtoast(t) {
-  mtoastEl.textContent = t;
-  mtoastEl.classList.add('on');
-  mtoastT = performance.now();
-}
-function toggleMenu() {
-  menuOpen = !menuOpen;
-  menuEl.classList.toggle('hidden', !menuOpen);
-  hudEl.classList.toggle('on', !menuOpen);
-  if (!menuOpen) toast('ENTERING THE VILLAGE');
-}
-document.querySelectorAll('#menu [data-act]').forEach(b => b.addEventListener('click', () => {
-  const act = b.dataset.act;
-  if (act === 'play') toggleMenu();
-  else if (act === 'close') document.getElementById('credits').classList.add('hidden');
-  else if (act === 'credits') document.getElementById('credits').classList.remove('hidden');
-  else mtoast('COMING IN AN UPDATE');
-}));
-document.getElementById('credits').addEventListener('click', e => {
-  if (e.target.id === 'credits') e.currentTarget.classList.add('hidden');
-});
-
 tick();
