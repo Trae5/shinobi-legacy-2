@@ -63,6 +63,8 @@ function doDice(wager) {
 /* ============================================================
    SYSTEM C — WILD GATHERING (materials from the land)
    ============================================================ */
+const MAT_NAMES = { scrollDust: "scroll dust", ore: "iron ore", beastClaw: "beast claws", jade: "jade shards", herb: "herbs" };
+const matName = (k) => MAT_NAMES[k] || k;
 const GATHER_SPOTS = [
   { id: "herbs", name: "Medicinal Grove", icon: "🌿", cd: 8 * 60000, mats: { scrollDust: [1, 3] }, desc: "Seal-paper reeds grow thick here." },
   { id: "mine", name: "Old Iron Mine", icon: "⛏", cd: 15 * 60000, mats: { ore: [2, 5] }, desc: "Abandoned, but the veins never ran dry." },
@@ -77,7 +79,7 @@ function doGather(s) {
   c.a3.gather[s.id] = Date.now();
   c.a3.counts.g = (c.a3.counts.g || 0) + 1;
   const lines = [];
-  for (const k in s.mats) { const n = s.mats[k][0] + Math.floor(Math.random() * (s.mats[k][1] - s.mats[k][0] + 1)); c.mats[k] = (c.mats[k] || 0) + n; lines.push("+" + n + " " + k); }
+  for (const k in s.mats) { const n = s.mats[k][0] + Math.floor(Math.random() * (s.mats[k][1] - s.mats[k][0] + 1)); c.mats[k] = (c.mats[k] || 0) + n; lines.push("+" + n + " " + matName(k)); }
   if (s.ryo) { const r = s.ryo[0] + Math.floor(Math.random() * (s.ryo[1] - s.ryo[0] + 1)); aGain(r); lines.push("+" + fmtN(r) + " ryo"); }
   p1save();
   toast("Gathered: " + lines.join(" · "));
@@ -157,7 +159,7 @@ function renderActivities() {
       body.append(card(s.icon + "  " + s.name, s.desc,
         cooling ? "Restock " + Math.ceil(gatherLeft(s) / 60000) + " min" : "Gather",
         () => doGather(s), cooling,
-        Object.keys(s.mats).map(k => k).join(" · ")));
+        Object.keys(s.mats).map(k => matName(k)).join(" · ")));
     }
   }
 }
