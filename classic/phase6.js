@@ -6,7 +6,7 @@
    Sacrifice Awakening), rare restoration, injury record.
    Depends on phase1.js (helpers). Live hooks via window.__SL2*.
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook } from "./phase1.js";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook } from "./phase1.js?v=p1127";
 
 /* ---------------- state ---------------- */
 let SAVE6 = null;
@@ -536,7 +536,17 @@ function devTest() {
           console.log("[injdbg]", JSON.stringify({ keys, a6: ent && ent.a6 || null, save6: SAVE6 && (SAVE6.name || SAVE6.charName || "noname"), save6null: SAVE6 === null, hp }));
         } catch (e) { console.log("[injdbg] err", e && e.message); }
       };
-      dump(); setInterval(dump, 5000);
+      const paint = () => { try { let n = document.getElementById("injdbgout"); if (!n) { n = document.createElement("div"); n.id = "injdbgout"; n.style.display = "none"; document.body.appendChild(n); } n.textContent = JSON.stringify(dump0()); } catch {} };
+      const dump0 = () => {
+        try {
+          const raw = JSON.parse(localStorage.getItem("sl2_phase1_v1") || "null");
+          const keys = raw && raw.chars ? Object.keys(raw.chars) : [];
+          const ent = raw && raw.chars && raw.chars.injtest;
+          let hp = null; try { const g = getGame(); hp = g && g.player ? g.player.hp : null; } catch {}
+          return { keys, a6: ent && ent.a6 || null, save6: SAVE6 && (SAVE6.name || SAVE6.charName || "noname"), save6null: SAVE6 === null, hp, t: Date.now() };
+        } catch (e) { return { err: e && e.message }; }
+      };
+      paint(); setInterval(paint, 3000);
     }
   } catch {}
 if (!new URLSearchParams(location.search).get("injtest")) return;

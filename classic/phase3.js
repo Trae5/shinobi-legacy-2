@@ -3,7 +3,7 @@
    Player Activities: Bounty Board, Gambling Den, Wild Gathering
    Depends on phase1.js (helpers, battle engine, mats).
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setTrainHook, V_ui } from "./phase1.js";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setTrainHook, V_ui } from "./phase1.js?v=p1127";
 
 let SAVE3 = null;
 function aChar() {
