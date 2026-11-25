@@ -41,6 +41,7 @@ function charKey(save) {
   return String(nm).toLowerCase().slice(0, 40) || "unknown";
 }
 function p1char(save) {
+  if (!save) save = SAVE;
   p1load();
   const k = charKey(save);
   if (!ROOT.chars[k]) ROOT.chars[k] = {
@@ -113,6 +114,8 @@ const CSS = `
 /* ============================================================
    SHARED: status effects + turn-based trial combat engine
    ============================================================ */
+let WEAPON_HOOK = null;
+function setWeaponHook(fn) { WEAPON_HOOK = fn; }
 function fxList() { return []; }
 function makeFx(kind, turns, val) { return { kind, turns, val }; }
 /* battle state: {php, pmax, ghp, gmax, gatk, turn, log[], fxP[], fxG[], sum, combo, over, win, flavor} */
@@ -124,13 +127,14 @@ function battleStart(species, guardianName, opts) {
   const b = bondLvl(bond.bond || 0);
   const sumBonus = species ? (0.25 + b * 0.05) : 0;
   const chBonus = chakraBattleBonus();
+  const wBonusX = WEAPON_HOOK ? WEAPON_HOOK() : 0;
   const php = 60 + lv * 5;
   const pmax = php;
   const ghp = 80 + lv * 7 + (opts.gmul || 1) * 40;
   const gmax = ghp;
   return {
     php, pmax, ghp, gmax,
-    patk: (9 + lv * 1.35) * (1 + sumBonus) * (1 + chBonus),
+    patk: (9 + lv * 1.35) * (1 + sumBonus) * (1 + chBonus + wBonusX),
     gatk: 9 + lv * 1.45 + (opts.gmul || 1) * 6,
     turn: 1, log: [], fxP: [], fxG: [],
     sum: species ? { sp: species, bond: b } : null,
@@ -261,6 +265,7 @@ function doHunt() {
       out.push('<span class="good">You pull a worn scroll fragment from the ruins. <b>' + sp.icon + " " + sp.name + " fragment " + n + "/" + FRAGS_NEED + "</b></span>");
       if (n >= FRAGS_NEED) out.push('<span class="good">The fragments form a whole contract scroll. <b>The ' + sp.name + " trial awaits.</b></span>");
       if (Math.random() < 0.35) { c.mats.ore++; c.mats.beastClaw++; }
+      if (Math.random() < 0.12) { c.mats.jade++; out.push('<span class="good">Deep in the ruin: a vein of <b>jade</b>.</span>'); }
     } else {
       out.push('<span class="dim">Nothing new out there — but you bring back materials.</span>');
       c.mats.ore += 2; c.mats.scrollDust++;
@@ -567,6 +572,7 @@ function open(system, save, sfx) {
   SAVE = save || null;
   SFX = sfx || null;
   p1load();
+  if (system === "training" || system === "forge") { import("./phase1b.js?v=p1124").then(m => m.open(system, save, sfx)).catch(t => { console.error("phase1b", t); toast("Training suite failed to load."); }); return; }
   if (!$q("#p1css")) { const st = document.createElement("style"); st.id = "p1css"; st.textContent = CSS; document.head.append(st); }
   CUR = system === "chakra" ? "chakra" : "summons";
   let ov = $q("#p1ov");
@@ -583,10 +589,10 @@ function open(system, save, sfx) {
       hh("div", { class: "p1body", id: "p1body" }),
       hh("div", { class: "p1foot" },
         hh("span", {}, "Phase 1 — Summoning Contracts & Chakra Nature Mastery"),
-        hh("span", {}, "Training simulator and weapon forging arrive in Phase 1b"))));
+        hh("span", {}, "Summoning · Chakra Mastery · Training · Forging"))));
   document.body.append(ov);
   ov.addEventListener("pointerdown", (e) => { if (e.target === ov) closeP1(); });
   rerender(CUR);
 }
 function closeP1() { const ov = $q("#p1ov"); if (ov) ov.remove(); TRIAL = null; }
-export { open };
+export { open, hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, V_ui };
