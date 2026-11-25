@@ -1,0 +1,15 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #0a0d18; overflow: hidden; }
+body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; color: #e8e6e1; }
+#app, #app canvas { position: fixed; inset: 0; }
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+#brand { position: absolute; top: 18px; left: 22px; letter-spacing: .12em; font-weight: 700; font-size: 15px; }
+#brand em { color: #c8283c; font-style: normal; }
+#brand .tag { display: block; margin-top: 4px; font-size: 10px; letter-spacing: .22em; color: #8b8f9c; font-weight: 400; text-transform: uppercase; }
+#hint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: .14em; color: #7c8191; text-transform: uppercase; }
+#camtoast { position: absolute; top: 18px; right: 22px; font-size: 11px; letter-spacing: .28em; color: #c8283c; opacity: 0; transition: opacity .25s; text-transform: uppercase; }
+#camtoast.on { opacity: 1; }
+#loading { position: fixed; inset: 0; background: #0a0d18; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; z-index: 10; transition: opacity .6s; }
+#loading.done { opacity: 0; pointer-events: none; }
+.ld-mark { font-size: 42px; color: #c8283c; }
+.ld-text { font-size: 11px; letter-spacing: .3em; color: #8b8f9c; }
