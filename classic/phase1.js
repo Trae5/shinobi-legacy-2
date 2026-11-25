@@ -490,15 +490,18 @@ function startDrill(e) {
 
 /* ---------- trial battle UI ---------- */
 let TRIAL = null;
+let CUSTOM_WIN = null;
+function setCustomWin(fn) { CUSTOM_WIN = typeof fn === "function" ? fn : null; }
 function startTrial(sp, opts) {
   const c = p1char(SAVE);
   const lv = pLv();
-  const rarMul = sp.rarity === "Mythic" ? 2.2 : sp.rarity === "Legendary" ? 1.8 : sp.rarity === "Rare" ? 1.4 : sp.rarity === "Uncommon" ? 1.15 : 1;
+  const rarMul = sp.custom ? 1 : (sp.rarity === "Mythic" ? 2.2 : sp.rarity === "Legendary" ? 1.8 : sp.rarity === "Rare" ? 1.4 : sp.rarity === "Uncommon" ? 1.15 : 1);
   const gNames = { toads: "Elder Toad Sage", wolves: "Alpha of the High Passes", snakes: "The Coiled Warden", hawks: "Talon Sovereign", slugs: "The Great Matriarch", foxes: "Nine-Tailed Trickster", komainu: "Shrine Sentinel", raiju: "Storm-Borne Raiju", dragons: "Ember King" };
   const activeSp = c.sum.active && spById(c.sum.active);
-  TRIAL = battleStart(activeSp || null, gNames[sp.id] || "Contract Guardian", { gmul: rarMul, combo: bestCombo() });
+  TRIAL = battleStart(activeSp || null, sp.custom ? sp.name : (gNames[sp.id] || "Contract Guardian"), { gmul: rarMul, combo: bestCombo() });
+  if (sp.custom) { TRIAL.ghp = TRIAL.gmax = sp.hp; TRIAL.gatk = sp.atk; TRIAL.reward = sp.reward; }
   TRIAL.sp = sp; TRIAL.type = opts.type;
-  logAdd(TRIAL, (opts.type === "sign" ? "Contract trial for " : "Bond trial for ") + sp.icon + " " + sp.name + " — the guardian takes its stance.", "dim");
+  logAdd(TRIAL, (opts.type === "sign" ? "Contract trial for " : opts.type === "bounty" ? "Bounty hunt: " : "Bond trial for ") + sp.icon + " " + sp.name + " — the guardian takes its stance.", "dim");
   if (activeSp) logAdd(TRIAL, activeSp.icon + " " + activeSp.name + " fights at your side.", "good");
   renderTrial();
 }
@@ -511,7 +514,7 @@ function renderTrial() {
   const body = $q("#p1body"); if (!body || !TRIAL) return;
   body.textContent = "";
   const b = TRIAL;
-  body.append(hh("div", { class: "p1title" }, (b.type === "sign" ? "Contract trial — " : "Bond trial — ") + b.sp.icon + " " + b.sp.name));
+  body.append(hh("div", { class: "p1title" }, (b.type === "sign" ? "Contract trial — " : b.type === "bounty" ? "Bounty hunt — " : b.type === "legend" ? "Legend trial — " : "Bond trial — ") + b.sp.icon + " " + b.sp.name));
   const bars = hh("div", { class: "p1row", style: { marginBottom: "10px" } },
     hpBar("You", b.php, b.pmax), hpBar(b.gname, b.ghp, b.gmax));
   body.append(bars);
@@ -538,6 +541,14 @@ function renderTrial() {
         if (!c.sum.active) c.sum.active = b.sp.id;
         p1save();
         done.append(hh("div", { style: { fontSize: ".8rem", color: "#8ef2b8", fontWeight: 800 } }, "Contract signed — " + b.sp.name + " is yours."));
+      } else if (b.type === "custom" && CUSTOM_WIN) {
+        CUSTOM_WIN(b);
+      } else if (b.type === "bounty") {
+        const r = b.reward || {};
+        if (r.ryo) SAVE.ryo = Math.max(0, Math.floor(SAVE.ryo || 0) + r.ryo);
+        if (r.mats) for (const k in r.mats) c.mats[k] = (c.mats[k] || 0) + r.mats[k];
+        p1save();
+        done.append(hh("div", { style: { fontSize: ".8rem", color: "#8ef2b8", fontWeight: 800 } }, "Bounty collected: +" + fmtN(r.ryo || 0) + " ryo" + (r.mats ? " + materials" : "") + "."));
       } else {
         addBond(b.sp.id, 45);
         c.mats.beastClaw++; c.mats.scrollDust++;
@@ -599,4 +610,4 @@ function open(system, save, sfx) {
   rerender(CUR);
 }
 function closeP1() { const ov = $q("#p1ov"); if (ov) ov.remove(); TRIAL = null; }
-export { open, hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setTrainHook, V_ui };
+export { open, hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setTrainHook, setCustomWin, startTrial, V_ui };
