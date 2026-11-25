@@ -3,7 +3,7 @@
    Systems: Training Simulator + Weapon Forging
    Depends on phase1.js (shared helpers, mats, battle hook).
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setTrainHook, V_ui } from "./phase1.js?v=p1127";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setTrainHook, V_ui } from "./phase1.js?v=p1129";
 
 /* ---------- player-side store (same save object as phase 1) ---------- */
 function trnChar() {
