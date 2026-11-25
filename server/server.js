@@ -52,7 +52,7 @@ function broadcast(room, obj, except) {
   for (const p of room.players) if (p !== except && p.ws.readyState === 1) p.ws.send(msg);
 }
 function lobbyList() {
-  return [...players.values()].filter(p => !p.room).map(p => ({ name: p.name, lv: p.lv, uid: p.uid }));
+  return [...players.values()].filter(p => !p.room).map(p => ({ name: p.name, lv: p.lv, uid: p.uid, arm: (p.inj && p.inj.arm) || null, eye: (p.inj && p.inj.eye) || null }));
 }
 
 /* ---------------- pvp referee ---------------- */
@@ -105,7 +105,10 @@ WSS.on("connection", (ws) => {
     const p = players.get(ws);
     if (!p) return;
 
-    if (m.t === "chat") {
+    if (m.t === "inj") {
+      p.inj = { arm: (m.arm === "left" || m.arm === "right") ? m.arm : null, eye: (m.eye === "left" || m.eye === "right") ? m.eye : null };
+      broadcast(roomOf(p.room || "lobby"), { t: "inj", name: p.name, arm: p.inj.arm, eye: p.inj.eye }, ws);
+    } else if (m.t === "chat") {
       const msg = String(m.msg || "").slice(0, 200);
       broadcast(roomOf(p.room || "lobby"), { t: "chat", from: p.name, msg });
     } else if (m.t === "list") {

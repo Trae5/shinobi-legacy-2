@@ -114,11 +114,13 @@ function connect() {
   if (!SERVER_URL) return;
   try { sock = new WebSocket(SERVER_URL); } catch (e) { toast("Arena unreachable."); return; }
   sock.addEventListener("open", () => {
+    try { window.__SL2sock = sock; } catch (e) {}
     const c = p1char(SAVE4);
     const tok = (typeof firebase !== "undefined" && firebase.auth && firebase.auth().currentUser) ? null : null;
     /* the id token comes from the page's Firebase session; the server
        verifies it against Identity Toolkit, so no new passwords */
     send({ t: "auth", idToken: tok, name: pName(), lv: pLv() });
+    try { if (window.__SL2injState) { const st = window.__SL2injState(); if (st.arm || st.eye) send({ t: "inj", name: pName(), arm: st.arm, eye: st.eye }); } } catch (e) {}
   });
   sock.addEventListener("message", (ev) => {
     let m = null; try { m = JSON.parse(ev.data); } catch (e) { return; }
@@ -130,8 +132,9 @@ function connect() {
       toast(m.win ? "Victory over " + m.vs + "!" : "Defeat vs " + m.vs + ".");
       renderMultiplayer();
     }
+    else if (m.t === "inj") { try { window.__SL2injPeer && window.__SL2injPeer(m); } catch (e) {} }
     else if (m.t === "auth_fail") { toast("Arena sign-in failed. Try re-entering the game."); }
   });
-  sock.addEventListener("close", () => { sock = null; const w = $q("#p4who"); if (w) w.textContent = statusLine(); });
+  sock.addEventListener("close", () => { sock = null; try { window.__SL2sock = null; } catch (e) {} const w = $q("#p4who"); if (w) w.textContent = statusLine(); });
 }
 export { openMultiplayer as open, challenge, connect, send };
