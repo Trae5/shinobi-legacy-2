@@ -58,7 +58,7 @@ function a6Of(sv) {
   if (!key) return null;
   const now = Date.now();
   if (A6C.key === key && now - A6C.t < 1200 && A6C.val) return A6C.val;
-  try { const c = p1char(sv); A6C = { key, t: now, val: initA6(c.a6) }; return A6C.val; } catch { return null; }
+  try { const c = p1char(sv); c.a6 = initA6(c.a6); A6C = { key, t: now, val: c.a6 }; return A6C.val; } catch { return null; }
 }
 function a6Flush() { A6C.t = 0; }
 
