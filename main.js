@@ -9,7 +9,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMappingExposure = 1.18;
 container.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
@@ -25,9 +25,9 @@ addEventListener('resize', () => {
 });
 
 /* ---------- lights ---------- */
-scene.add(new THREE.HemisphereLight(0x7f92bd, 0x241a12, 0.5));
+scene.add(new THREE.HemisphereLight(0x7f92bd, 0x241a12, 0.8));
 
-const moonLight = new THREE.DirectionalLight(0xbcd0ff, 1.1);
+const moonLight = new THREE.DirectionalLight(0xbcd0ff, 1.7);
 moonLight.position.set(-24, 32, -18);
 moonLight.castShadow = true;
 moonLight.shadow.mapSize.set(2048, 2048);
@@ -39,7 +39,7 @@ moonLight.shadow.camera.far = 110;
 moonLight.shadow.bias = -0.0004;
 scene.add(moonLight);
 
-const ember = new THREE.DirectionalLight(0xff9d5c, 0.3);
+const ember = new THREE.DirectionalLight(0xff9d5c, 0.45);
 ember.position.set(14, 9, 12);
 scene.add(ember);
 
@@ -48,7 +48,7 @@ const moonDisc = new THREE.Mesh(
   new THREE.CircleGeometry(3.2, 40),
   new THREE.MeshBasicMaterial({ color: 0xdfe8ff, fog: false })
 );
-moonDisc.position.set(-70, 46, -95);
+moonDisc.position.set(34, 42, -95);
 moonDisc.lookAt(0, 0, 0);
 scene.add(moonDisc);
 
@@ -70,7 +70,7 @@ scene.add(moonDisc);
 /* ---------- ground ---------- */
 const ground = new THREE.Mesh(
   new THREE.CircleGeometry(130, 64),
-  new THREE.MeshStandardMaterial({ color: 0x141d17, roughness: 1 })
+  new THREE.MeshStandardMaterial({ color: 0x1b2620, roughness: 1 })
 );
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
