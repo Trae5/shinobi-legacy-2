@@ -21,3 +21,6 @@
 #mainMenu.mm3 .mm3Foot #gameVersion{color:#cfeaff}
 #loading .logo .l1,#mainMenu .logo .l1{color:#eaf6ff;text-shadow:0 0 22px #46b7ff59}
 #loading .logo .l2,#mainMenu .logo .l2{color:#7fd4ff;text-shadow:0 0 18px #46b7ff8c;letter-spacing:.34em}
+
+#mainMenu.mm3 #btnPlay.mm3B.play,#mainMenu.mm3 #btnPlay.mm3B.play:hover,#mainMenu.mm3 #btnPlay.mm3B.play:focus-visible{background:linear-gradient(180deg,#c6ecff,#46b7ff 55%,#1e7fd6)!important;border-color:#d9f3ff!important;color:#06263f!important;box-shadow:0 0 24px #46b7ff8c,inset 0 1px #fff9!important}
+#mainMenu.mm3 #btnPlay.mm3B.play .mm2I svg{fill:#06263f!important}
