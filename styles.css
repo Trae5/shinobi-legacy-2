@@ -34,18 +34,18 @@ body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; color: #e8
 .m-sub { font-size: 12px; color: #8fb2ff; margin-top: 2px; letter-spacing: .06em; }
 .m-sub b { color: #cfe0ff; }
 .m-bars { margin-top: 8px; display: grid; gap: 4px; }
-.m-bar { position: relative; width: 210px; height: 9px; background: rgba(10,16,36,.85); border: 1px solid rgba(90,150,255,.28); overflow: hidden; }
-.m-bar i { position: absolute; inset: 0; width: 100%; transform-origin: left; }
-.m-bar .hp { background: linear-gradient(90deg, #d43a4c, #ff6a7a); }
-.m-bar .ck { background: linear-gradient(90deg, #2f6fe0, #6fa8ff); }
-.m-bar .st { background: linear-gradient(90deg, #d98a2b, #ffc46a); }
-.m-bar span { position: absolute; inset: 0; display: flex; align-items: center; padding-left: 7px;
+.stat { position: relative; width: 210px; height: 9px; background: rgba(10,16,36,.85); border: 1px solid rgba(90,150,255,.28); overflow: hidden; }
+.stat i { position: absolute; inset: 0; width: 100%; transform-origin: left; }
+.stat.hp { background: linear-gradient(90deg, #d43a4c, #ff6a7a); }
+.stat.ck { background: linear-gradient(90deg, #2f6fe0, #6fa8ff); }
+.stat.st { background: linear-gradient(90deg, #d98a2b, #ffc46a); }
+.stat span { position: absolute; inset: 0; display: flex; align-items: center; padding-left: 7px;
   font-size: 8.5px; letter-spacing: .14em; color: #fff; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
 .m-aff { margin-top: 8px; font-size: 11.5px; color: #9fb6d8; letter-spacing: .05em; }
 .m-aff b { color: #cfe0ff; }
 
-.m-nav { position: absolute; top: 210px; left: 26px; display: grid; gap: 10px; width: 250px; z-index: 2; }
-.m-btn { display: flex; align-items: center; gap: 12px; padding: 11px 14px; text-align: left; cursor: pointer;
+.m-nav { position: absolute; top: 194px; left: 26px; display: grid; gap: 8px; width: 250px; z-index: 2; }
+.m-btn { display: flex; align-items: center; gap: 12px; padding: 8px 14px; text-align: left; cursor: pointer;
   background: linear-gradient(90deg, rgba(10,22,50,.78), rgba(8,14,32,.42));
   border: 1px solid rgba(90,150,255,.3); color: #dce8ff; font-family: inherit;
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
@@ -73,8 +73,8 @@ body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; color: #e8
 .m-log a { display: inline-block; margin-top: 11px; font-size: 11px; color: #7db4ff; text-decoration: none; letter-spacing: .06em; }
 .m-log a:hover { text-decoration: underline; }
 
-.m-title { position: absolute; left: 30px; bottom: 74px; }
-.m-title h1 { font-size: 30px; letter-spacing: .1em; color: #eaf2ff; text-shadow: 0 2px 24px rgba(40,90,255,.5); }
+.m-title { position: absolute; left: 30px; bottom: 66px; }
+.m-title h1 { font-size: 26px; letter-spacing: .1em; color: #eaf2ff; text-shadow: 0 2px 24px rgba(40,90,255,.5); }
 .m-title h1 em { color: #7db4ff; font-style: normal; }
 .m-title p { margin-top: 4px; font-size: 12px; letter-spacing: .16em; color: #9fb6d8; text-transform: none; }
 
