@@ -24,3 +24,36 @@
 
 #mainMenu.mm3 #btnPlay.mm3B.play,#mainMenu.mm3 #btnPlay.mm3B.play:hover,#mainMenu.mm3 #btnPlay.mm3B.play:focus-visible{background:linear-gradient(180deg,#c6ecff,#46b7ff 55%,#1e7fd6)!important;border-color:#d9f3ff!important;color:#06263f!important;box-shadow:0 0 24px #46b7ff8c,inset 0 1px #fff9!important}
 #mainMenu.mm3 #btnPlay.mm3B.play .mm2I svg{fill:#06263f!important}
+
+/* gm2 - in-game menu home (grouped blue layout) */
+.card.gm2Wide{width:min(1180px,100%)}
+.gmWrap{position:relative}
+.gmBack{position:absolute;left:16px;bottom:14px;z-index:6;display:inline-flex;align-items:center;gap:.4em;padding:.55em 1em;border-radius:12px;background:linear-gradient(180deg,#13294a,#0b1a30);border:1px solid rgba(90,180,255,.5);color:#d6ecff;font-weight:800;letter-spacing:.03em;cursor:pointer;box-shadow:0 0 20px rgba(60,140,255,.25)}
+.gmBack:hover{filter:brightness(1.18)}
+.gm2Grid{display:grid;grid-template-columns:250px minmax(0,1fr) 260px;gap:14px;padding:4px 2px 64px;align-items:start;max-height:100%;overflow:auto}
+.gm2Card{background:linear-gradient(180deg,#10233e,#0a1526);border:1px solid rgba(90,180,255,.35);border-radius:16px;padding:12px;box-shadow:0 0 24px rgba(50,120,220,.16)}
+.gm2Ava{height:150px;border-radius:12px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#173154,#0b1930);margin-bottom:8px;position:relative}
+.gm2Ava canvas{width:100%!important;height:100%!important}
+.gm2Name{font-size:1.12rem;font-weight:900;color:#eaf6ff}
+.gm2Sub{font-size:.78rem;color:#8fc3ee;margin-top:2px}
+.gm2Vit{margin-top:10px;display:grid;gap:7px}
+.gm2VitRow{display:grid;grid-template-columns:58px 1fr 84px;gap:8px;align-items:center;font-size:.72rem;color:#bcdcf5}
+.gm2VitBar{height:8px;border-radius:99px;background:#08111f;border:1px solid rgba(90,180,255,.3);overflow:hidden}
+.gm2VitBar i{display:block;height:100%;border-radius:99px}
+.gm2Sec{background:linear-gradient(180deg,#10233e,#0a1526);border:1px solid rgba(90,180,255,.3);border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:0 0 24px rgba(50,120,220,.12)}
+.gm2SecT{font-size:1rem;font-weight:900;color:#7fc4ff;margin-bottom:10px}
+.gm2Icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:9px}
+.gm2Ic{display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 4px 9px;border-radius:13px;background:#0c1a2e;border:1px solid rgba(90,180,255,.26);color:#d6ecff;font-weight:800;font-size:.72rem;cursor:pointer;transition:transform .08s,border-color .08s,box-shadow .08s}
+.gm2Ic:hover{border-color:#4db5ff;transform:translateY(-2px);box-shadow:0 0 16px rgba(70,160,255,.3)}
+.gm2Ic i{font-style:normal;font-size:1.45rem;line-height:1}
+.gm2Right{display:grid;gap:12px}
+.gm2Panel{background:linear-gradient(180deg,#10233e,#0a1526);border:1px solid rgba(90,180,255,.3);border-radius:16px;padding:12px}
+.gm2Panel h4{margin:0 0 7px;font-size:.9rem;color:#7fc4ff}
+.gm2Panel p{margin:0 0 5px;font-size:.82rem;color:#cfe6fa}
+.gm2Note{color:#9fc9e8}
+.gm2Phase{padding:4px 2px 64px}
+.gmPhaseHost{position:relative;height:min(66vh,620px);border-radius:14px;overflow:auto;background:#0a1526}
+.gmPhaseHost .p1ov{position:absolute!important;inset:0!important;z-index:1!important}
+.gmPhaseHost .p1m{width:min(860px,97%)!important;max-height:none!important}
+@media(max-width:1120px){.gm2Grid{grid-template-columns:220px minmax(0,1fr)}.gm2Right{grid-column:1/-1;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
+@media(max-width:720px){.gm2Grid{grid-template-columns:1fr}.gm2Right{grid-template-columns:1fr}}
