@@ -5,7 +5,7 @@
    (server/server.js) over WebSockets; logins ride the player's
    existing Firebase session, so nothing new to sign up for.
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, V_ui } from "./phase1.js?v=p1132";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, V_ui } from "./phase1.js?v=p1133";
 
 /* Set this to the deployed arena server address when it goes live.
    Empty means the panel shows the offline state and the rest of
@@ -119,7 +119,7 @@ function connect() {
     /* the classic client has no Firebase SDK, so the token is null and the
        arena server signs us in as a guest; a client that sends a real token
        is verified against Firebase instead */
-    send({ t: "auth", idToken: tok, name: pName(), lv: pLv() });
+    send({ t: "auth", idToken: null, name: pName(), lv: pLv() });
   });
   sock.addEventListener("message", (ev) => {
     let m = null; try { m = JSON.parse(ev.data); } catch (e) { return; }
