@@ -57,3 +57,5 @@
 .gmPhaseHost .p1m{width:min(860px,97%)!important;max-height:none!important}
 @media(max-width:1120px){.gm2Grid{grid-template-columns:220px minmax(0,1fr)}.gm2Right{grid-column:1/-1;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
 @media(max-width:720px){.gm2Grid{grid-template-columns:1fr}.gm2Right{grid-template-columns:1fr}}
+.card.gm2Wide header{background:linear-gradient(90deg,rgba(77,181,255,.16),transparent)}
+.card.gm2Wide header h2{color:#bfe3ff}
