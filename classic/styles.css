@@ -26,13 +26,15 @@
 #mainMenu.mm3 #btnPlay.mm3B.play .mm2I svg{fill:#06263f!important}
 
 /* gm2 - in-game menu home (grouped blue layout) */
-.card.gm2Wide{width:min(1180px,100%)}
+.card.gm2Wide .card{width:min(1180px,100%);max-height:calc(100vh - 20px)}
+.gm2Wide header{background:linear-gradient(90deg,rgba(77,181,255,.16),transparent);padding-top:8px;padding-bottom:8px}
+.gm2Wide header h2{color:#bfe3ff}
 .gmWrap{position:relative}
 .gmBack{position:absolute;left:16px;bottom:14px;z-index:6;display:inline-flex;align-items:center;gap:.4em;padding:.55em 1em;border-radius:12px;background:linear-gradient(180deg,#13294a,#0b1a30);border:1px solid rgba(90,180,255,.5);color:#d6ecff;font-weight:800;letter-spacing:.03em;cursor:pointer;box-shadow:0 0 20px rgba(60,140,255,.25)}
 .gmBack:hover{filter:brightness(1.18)}
-.gm2Grid{display:grid;grid-template-columns:250px minmax(0,1fr) 260px;gap:14px;padding:4px 2px 64px;align-items:start;max-height:100%;overflow:auto}
+.gm2Grid{display:grid;grid-template-columns:250px minmax(0,1fr) 260px;gap:10px;padding:2px 2px 44px;align-items:start;max-height:100%;overflow:auto}
 .gm2Card{background:linear-gradient(180deg,#10233e,#0a1526);border:1px solid rgba(90,180,255,.35);border-radius:16px;padding:12px;box-shadow:0 0 24px rgba(50,120,220,.16)}
-.gm2Ava{height:150px;border-radius:12px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#173154,#0b1930);margin-bottom:8px;position:relative}
+.gm2Ava{height:118px;border-radius:12px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#173154,#0b1930);margin-bottom:8px;position:relative}
 .gm2Ava canvas{width:100%!important;height:100%!important}
 .gm2Name{font-size:1.12rem;font-weight:900;color:#eaf6ff}
 .gm2Sub{font-size:.78rem;color:#8fc3ee;margin-top:2px}
@@ -40,10 +42,10 @@
 .gm2VitRow{display:grid;grid-template-columns:58px 1fr 84px;gap:8px;align-items:center;font-size:.72rem;color:#bcdcf5}
 .gm2VitBar{height:8px;border-radius:99px;background:#08111f;border:1px solid rgba(90,180,255,.3);overflow:hidden}
 .gm2VitBar i{display:block;height:100%;border-radius:99px}
-.gm2Sec{background:linear-gradient(180deg,#10233e,#0a1526);border:1px solid rgba(90,180,255,.3);border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:0 0 24px rgba(50,120,220,.12)}
-.gm2SecT{font-size:1rem;font-weight:900;color:#7fc4ff;margin-bottom:10px}
-.gm2Icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:9px}
-.gm2Ic{display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 4px 9px;border-radius:13px;background:#0c1a2e;border:1px solid rgba(90,180,255,.26);color:#d6ecff;font-weight:800;font-size:.72rem;cursor:pointer;transition:transform .08s,border-color .08s,box-shadow .08s}
+.gm2Sec{background:linear-gradient(180deg,#10233e,#0a1526);border:1px solid rgba(90,180,255,.3);border-radius:16px;padding:10px;margin-bottom:10px;box-shadow:0 0 24px rgba(50,120,220,.12)}
+.gm2SecT{font-size:1rem;font-weight:900;color:#7fc4ff;margin-bottom:8px}
+.gm2Icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+.gm2Ic{display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 4px 6px;border-radius:13px;background:#0c1a2e;border:1px solid rgba(90,180,255,.26);color:#d6ecff;font-weight:800;font-size:.72rem;cursor:pointer;transition:transform .08s,border-color .08s,box-shadow .08s}
 .gm2Ic:hover{border-color:#4db5ff;transform:translateY(-2px);box-shadow:0 0 16px rgba(70,160,255,.3)}
 .gm2Ic i{font-style:normal;font-size:1.45rem;line-height:1}
 .gm2Right{display:grid;gap:12px}
