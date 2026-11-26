@@ -6,7 +6,7 @@
    Sacrifice Awakening), rare restoration, injury record.
    Depends on phase1.js (helpers). Live hooks via window.__SL2*.
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook } from "./phase1.js?v=p1133";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook } from "./phase1.js?v=p1134";
 
 /* ---------------- state ---------------- */
 let SAVE6 = null;
@@ -392,6 +392,7 @@ function openInjuries(save, cb) {
   SAVE6 = save || SAVE6;
   UI_CB = cb || null;
   p1save();
+  if (!$q("#p1css")) { const s1 = document.createElement("style"); s1.id = "p1css"; s1.textContent = CSS; document.head.append(s1); }
   if (!$q("#p6css")) { const st = document.createElement("style"); st.id = "p6css"; st.textContent = P6CSS; document.head.append(st); }
   let ov = $q("#p6ov");
   if (ov) ov.remove();

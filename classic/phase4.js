@@ -5,7 +5,7 @@
    (server/server.js) over WebSockets; logins ride the player's
    existing Firebase session, so nothing new to sign up for.
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, V_ui } from "./phase1.js?v=p1133";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, V_ui } from "./phase1.js?v=p1134";
 
 /* Set this to the deployed arena server address when it goes live.
    Empty means the panel shows the offline state and the rest of
@@ -30,6 +30,7 @@ function openMultiplayer(save, cb) {
   SAVE4 = save || null;
   uiCb = cb || null;
   p1save();
+  if (!$q("#p1css")) { const s1 = document.createElement("style"); s1.id = "p1css"; s1.textContent = CSS; document.head.append(s1); }
   if (!$q("#p4css")) { const st = document.createElement("style"); st.id = "p4css"; st.textContent = CSS; document.head.append(st); }
   let ov = $q("#p4ov");
   if (ov) ov.remove();

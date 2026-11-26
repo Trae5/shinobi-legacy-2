@@ -3,7 +3,7 @@
    Legendary Progression: the Hidden One, titles, prestige bonus
    Depends on phase1.js (helpers, trial engine, custom-win hook).
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setCustomWin, startTrial, V_ui } from "./phase1.js?v=p1131";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, setWeaponHook, setCustomWin, startTrial, V_ui } from "./phase1.js?v=p1134";
 
 let SAVE5 = null;
 function lChar() {
@@ -57,6 +57,7 @@ function openLegend(save, cb) {
   SAVE5 = save || null;
   UI_CB = cb || null;
   p1save();
+  if (!$q("#p1css")) { const s1 = document.createElement("style"); s1.id = "p1css"; s1.textContent = CSS; document.head.append(s1); }
   if (!$q("#p5css")) { const st = document.createElement("style"); st.id = "p5css"; st.textContent = CSS; document.head.append(st); }
   let ov = $q("#p5ov");
   if (ov) ov.remove();
