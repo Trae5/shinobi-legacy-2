@@ -587,7 +587,7 @@ function open(system, save, sfx) {
   SAVE = save || null;
   SFX = sfx || null;
   p1load();
-  if (system === "training" || system === "forge") { import("./phase1b.js?v=p1131").then(m => m.open(system, save, sfx)).catch(t => { console.error("phase1b", t); toast("Training suite failed to load."); }); return; }
+  if (system === "training" || system === "forge") { import("./phase1b.js?v=p1132").then(m => m.open(system, save, sfx)).catch(t => { console.error("phase1b", t); toast("Training suite failed to load."); }); return; }
   if (!$q("#p1css")) { const st = document.createElement("style"); st.id = "p1css"; st.textContent = CSS; document.head.append(st); }
   CUR = system === "chakra" ? "chakra" : "summons";
   let ov = $q("#p1ov");

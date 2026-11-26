@@ -74,7 +74,7 @@ function rollFight(a, b) {
 }
 
 const server = http.createServer((req, res) => {
-  if (req.url === "/health") { res.writeHead(200); res.end("ok"); return; }
+  if (req.url === "/health") { res.writeHead(200); res.end("ok v2-inj"); return; }
   if (req.url === "/rankings") { res.writeHead(200, { "Content-Type": "application/json" }); res.end(JSON.stringify(rankings)); return; }
   res.writeHead(404); res.end();
 });
@@ -93,12 +93,18 @@ WSS.on("connection", (ws) => {
     /* first message must be an auth: {t:"auth", idToken, name, lv} */
     if (!ws.authed) {
       if (m.t !== "auth") { ws.send(JSON.stringify({ t: "err", msg: "auth first" })); return; }
-      const u = await verifyToken(m.idToken || "");
-      if (!u) { ws.send(JSON.stringify({ t: "auth_fail" })); return; }
+      /* a verified Firebase token is a real account; no token (the classic
+         client ships no Firebase SDK, so it always sends null) joins as a
+         guest so the arena works for everyone */
+      let u = null;
+      if (m.idToken) { u = await verifyToken(m.idToken); if (!u) { ws.send(JSON.stringify({ t: "auth_fail" })); return; } }
       ws.authed = true;
-      const p = { uid: u.uid, name: String(m.name || u.email.split("@")[0]).slice(0, 20), lv: Math.max(1, Math.floor(Number(m.lv) || 1)), ws, room: null };
+      const nm = String((u && !m.name) ? (u.email || "Shinobi").split("@")[0] : (m.name || "Shinobi")).slice(0, 20);
+      const p = { uid: u ? u.uid : ("g:" + nm.toLowerCase().replace(/[^a-z0-9]/g, "") + ":" + Math.random().toString(36).slice(2, 8)), name: nm, lv: Math.max(1, Math.floor(Number(m.lv) || 1)), ws, room: null };
       players.set(ws, p);
       ws.send(JSON.stringify({ t: "welcome", name: p.name, online: players.size, rankings: rankings[p.uid] || null }));
+      /* a newcomer learns the injuries already in the room */
+      for (const q of players.values()) if (q !== p && q.inj && (q.inj.arm || q.inj.eye)) ws.send(JSON.stringify({ t: "inj", name: q.name, arm: q.inj.arm, eye: q.inj.eye }));
       broadcast(roomOf("lobby"), { t: "chat", from: "server", msg: p.name + " entered the arena." });
       return;
     }

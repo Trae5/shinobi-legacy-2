@@ -5,7 +5,7 @@
    (server/server.js) over WebSockets; logins ride the player's
    existing Firebase session, so nothing new to sign up for.
    ============================================================ */
-import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, V_ui } from "./phase1.js?v=p1131";
+import { hh, $q, toast, p1char, p1save, pLv, pName, fmtN, clampN, rnd, pick, CSS, V_ui } from "./phase1.js?v=p1132";
 
 /* Set this to the deployed arena server address when it goes live.
    Empty means the panel shows the offline state and the rest of
@@ -116,14 +116,14 @@ function connect() {
   sock.addEventListener("open", () => {
     try { window.__SL2sock = sock; } catch (e) {}
     const c = p1char(SAVE4);
-    const tok = (typeof firebase !== "undefined" && firebase.auth && firebase.auth().currentUser) ? null : null;
-    /* the id token comes from the page's Firebase session; the server
-       verifies it against Identity Toolkit, so no new passwords */
+    /* the classic client has no Firebase SDK, so the token is null and the
+       arena server signs us in as a guest; a client that sends a real token
+       is verified against Firebase instead */
     send({ t: "auth", idToken: tok, name: pName(), lv: pLv() });
-    try { if (window.__SL2injState) { const st = window.__SL2injState(); if (st.arm || st.eye) send({ t: "inj", name: pName(), arm: st.arm, eye: st.eye }); } } catch (e) {}
   });
   sock.addEventListener("message", (ev) => {
     let m = null; try { m = JSON.parse(ev.data); } catch (e) { return; }
+    if (m.t === "welcome") { try { const st = window.__SL2injState && window.__SL2injState(); if (st && (st.arm || st.eye)) send({ t: "inj", name: pName(), arm: st.arm, eye: st.eye }); } catch (e) {} }
     if (m.t === "chat" || m.t === "welcome" || m.t === "pending" || m.t === "err") { pushLog(m.from || "server", m.msg || ""); renderMultiplayer(); }
     else if (m.t === "list") { renderRoster(m.players || []); }
     else if (m.t === "duel_result") {
