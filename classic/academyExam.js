@@ -87,6 +87,9 @@ const EXAM_CSS = `
 .acadClone.pickable:hover{border-color:#46b7ff}
 .acadClone.good{border-color:#3ad17a;box-shadow:0 0 0 2px #3ad17a}
 .acadClone.bad{border-color:#e05555}
+.acadRing{position:absolute;display:flex;align-items:center;justify-content:center;border-radius:50%;border:3px solid #ffd23a;box-shadow:0 0 16px rgba(255,210,58,.85),inset 0 0 14px rgba(255,210,58,.45);color:#ffd23a;font-weight:800;background:rgba(255,210,58,.08);transform:translate(-50%,-50%);text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.acadRing.next{border-color:rgba(255,210,58,.28);box-shadow:none;color:transparent;background:rgba(255,210,58,.04)}
+.acadCourseArrow{font-size:1.8rem !important}
 .acadCoursePill{display:flex;align-items:center;gap:10px;font-size:1rem;padding:10px 16px;border-radius:999px;border:1px solid rgba(70,183,255,.5);background:rgba(6,10,24,.92);box-shadow:0 8px 30px rgba(0,0,0,.5)}
 .acadCourseArrow{color:#ffd23a;font-size:1.3rem}
 .acadBoutTell{font-size:1.05rem;font-weight:800;min-height:3em;text-align:center;color:#fff;margin:8px 0}
@@ -151,7 +154,7 @@ const STAGE_RULES = {
   written: "Five questions from the academy handbook. Answer at least three right to pass.",
   chakra: "Hold your chakra inside the blue band for 12 seconds. Hold SPACE (or the focus button) to raise it — it drains on its own. Spikes and drops both cost you.",
   clone: "Three rounds. The real one flashes first, then the cards shuffle. Pick the true you.",
-  course: "Ring the four course markers in the training yard. The HUD arrow points the way. Par is 80 seconds.",
+  course: "Ring the four glowing rings in the training yard. Follow the yellow arrow and run into each ring. Par is 80 seconds.",
   instructor: "Read sensei's movement and counter it. Six exchanges. Miss too many and you eat the mat."
 };
 
@@ -357,7 +360,7 @@ function runClone(done){
 function runCourse(done){
   const c = window.__SL2academyCtx;
   inputOn();
-  try { toast("🏃 WASD to run — follow the yellow arrow to each marker"); } catch(e){}
+  try { toast("\ud83c\udfc3 WASD to run \u2014 follow the arrow to the glowing rings"); } catch(e){}
   const PAR = 80, N = 4;
   const center = c.academyCenter(c.vid());
   const angles = [0.6, 1.9, 3.2, 4.6], radii = [12, 15, 13, 16];
@@ -365,12 +368,45 @@ function runCourse(done){
   const { ov, card } = examShell("Obstacle Course", "", true);
   ov.classList.add("hudMode");
   const pill = hh("div", { class:"acadCoursePill" },
-    hh("span", { class:"acadCourseArrow", style:"display:inline-block" }, "⬆"),
-    hh("b", { class:"acadCourseTxt" }, "Ring 1 of 4 · — m · 0.0s"));
-  const ff = hh("button", { class:"acadBtn ghost small", onclick:()=>{ cleanup(true); done(0); } }, "Forfeit");
+    hh("span", { class:"acadCourseArrow", style:"display:inline-block" }, "\u2b06"),
+    hh("b", { class:"acadCourseTxt" }, "Ring 1 of 4 \u00b7 \u2014 m \u00b7 0.0s"));
+  const ff = hh("button", { class:"acadBtn ghost small", onclick:() => { cleanup(true); done(0); } }, "Forfeit");
   card.append(pill, ff);
+  const layer = hh("div", { style:"position:fixed;inset:0;pointer-events:none;z-index:9590;overflow:hidden" });
+  const rings = wps.map((w, i) => {
+    const r = hh("div", { class:"acadRing" + (i ? " next" : "") }, String(i + 1));
+    layer.append(r); return r;
+  });
+  document.body.append(layer);
+  CLEANUPS.push(() => { cancelAnimationFrame(raf); layer.remove(); });
+  const place = (el, w, active) => {
+    try {
+      const g = game();
+      const cam = g && g.cam && g.cam.camera;
+      if (!cam) { el.style.display = "none"; return; }
+      const m = cam.matrixWorldInverse.elements, pj = cam.projectionMatrix.elements;
+      const x = w.x, y = 1.2, z = w.z;
+      const vx = m[0]*x + m[4]*y + m[8]*z + m[12];
+      const vy = m[1]*x + m[5]*y + m[9]*z + m[13];
+      const vz = m[2]*x + m[6]*y + m[10]*z + m[14];
+      const vw = m[3]*x + m[7]*y + m[11]*z + m[15];
+      if (vw <= 0.1) { el.style.display = "none"; return; }
+      const cx = pj[0]*vx + pj[4]*vy + pj[8]*vz + pj[12]*vw;
+      const cy = pj[1]*vx + pj[5]*vy + pj[9]*vz + pj[13]*vw;
+      const cw = pj[3]*vx + pj[7]*vy + pj[11]*vz + pj[15]*vw;
+      if (cw <= 0) { el.style.display = "none"; return; }
+      const nx = cx/cw, ny = cy/cw;
+      if (nx < -1.15 || nx > 1.15 || ny < -1.15 || ny > 1.15) { el.style.display = "none"; return; }
+      const sx = (nx*.5 + .5)*innerWidth, sy = (.5 - ny*.5)*innerHeight;
+      const p = g.player && g.player.pos;
+      const dist = p ? Math.max(2, Math.hypot(w.x - p.x, w.z - p.z)) : 14;
+      const d = active ? Math.max(34, Math.min(150, 900/dist)) : Math.max(18, Math.min(90, 600/dist));
+      el.style.display = "flex";
+      el.style.left = sx + "px"; el.style.top = sy + "px";
+      el.style.width = d + "px"; el.style.height = d + "px";
+    } catch(e){ el.style.display = "none"; }
+  };
   let wi = 0, t0 = performance.now(), raf = 0;
-  CLEANUPS.push(() => cancelAnimationFrame(raf));
   const tick = () => {
     const g = game();
     const p = g && g.player && g.player.pos;
@@ -386,14 +422,23 @@ function runCourse(done){
         done(s);
         return;
       }
-      try { toast("🎯 Marker " + wi + "/" + wps.length + " cleared"); } catch(e){}
+      try { toast("\ud83c\udfaf Marker " + wi + "/" + wps.length + " cleared"); } catch(e){}
     }
+    wps.forEach((wp, i) => place(rings[i], wp, i === wi));
     const cur = wps[wi];
-    const ddx = cur.x - p.x, ddz = cur.z - p.z, dd = Math.hypot(ddx, ddz);
-    let rel = 0;
-    try { const yaw = g.cam.yaw || 0; rel = Math.atan2(ddx, -ddz) - yaw; } catch(e){}
+    let rel = 0, ok = false;
+    try {
+      const cam = g.cam && g.cam.camera;
+      if (cam && cam.matrixWorldInverse) {
+        const m = cam.matrixWorldInverse.elements;
+        const vx = m[0]*cur.x + m[4]*1.2 + m[8]*cur.z + m[12];
+        const vz = m[2]*cur.x + m[6]*1.2 + m[10]*cur.z + m[14];
+        rel = Math.atan2(vx, -vz); ok = true;
+      }
+    } catch(e){}
+    if (!ok) { const ddx = cur.x - p.x, ddz = cur.z - p.z; try { rel = Math.atan2(ddx, -ddz) - (g.cam.yaw || 0); } catch(e){} }
     pill.querySelector(".acadCourseArrow").style.transform = "rotate(" + (rel * 180 / Math.PI) + "deg)";
-    pill.querySelector(".acadCourseTxt").textContent = "Ring " + (wi+1) + " of " + N + " · " + Math.round(dd) + " m · " + t.toFixed(1) + "s";
+    pill.querySelector(".acadCourseTxt").textContent = "Ring " + (wi+1) + " of " + N + " \u00b7 " + Math.round(Math.hypot(cur.x - p.x, cur.z - p.z)) + " m \u00b7 " + t.toFixed(1) + "s";
     raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);
