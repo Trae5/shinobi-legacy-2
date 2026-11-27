@@ -210,9 +210,10 @@ function graduate(a){
       hh("div", {}, "Exam average"), hh("b", {}, avg + "/100"),
       hh("div", {}, "Chakra nature"), hh("b", {}, nat),
       hh("div", {}, "Rank"), hh("b", {}, "Genin")),
-    hh("p", { class:"acadExamRules muted" }, "Your squad assignment comes next — report back soon."),
+    hh("p", { class:"acadExamRules muted" }, "Your squad assignment is ready."),
     hh("div", { class:"acadExamRow" },
-      hh("button", { class:"acadBtn", onclick:()=>cleanup(true) }, "Wear it proud")));
+      hh("button", { class:"acadBtn", onclick:()=>{ try { cleanup(true); } catch(e){} import("./squad.js?v=q1").then((m)=>m.meetSquad()).catch((e)=>console.log("[academy] squad load err", e && e.message)); } }, "🤝 Meet your squad"),
+      hh("button", { class:"acadBtn", onclick:()=>cleanup(true) }, "Later")));
   toast("🎓 Graduation complete — you are now a Genin of the " + c.VILLAGE_FULL[c.vid()] + "!");
   try { window.SL.hud && window.SL.hud.banner && window.SL.hud.banner("🎓 Graduation", "You are now a Genin", 3200); } catch(e){}
 }

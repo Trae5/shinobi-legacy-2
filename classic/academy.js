@@ -64,6 +64,7 @@ function freshAcd() {
     exam: { stage: 0, attempts: 0, passed: false, scores: { written: 0, chakra: 0, clone: 0, course: 0, instructor: 0 }, graduatedAt: 0 },
     natures: { primary: null, secondary: null, discoveredAt: 0, source: "" }, // source: "exam" | "legacy"
     squad: { generated: false, number: "", members: [], sensei: null },
+    missions: { board: [], refreshedAt: 0, done: 0, best: "" },
     chunin: { entered: false, stage: 0, passed: false, scores: [] }
   };
 }
@@ -78,7 +79,17 @@ function acdOf(save) {
   a.exam = a.exam || freshAcd().exam;
   a.natures = a.natures || freshAcd().natures;
   a.squad = a.squad || freshAcd().squad;
+  a.missions = a.missions || freshAcd().missions;
   a.chunin = a.chunin || freshAcd().chunin;
+  try { // dev-only: ?acadtest=<n>&acadpass=1 marks the exam passed for automated squad testing (never set on production URLs)
+    const qp = new URLSearchParams(location.search);
+    if (!a.exam.passed && qp.get("acadtest") && qp.get("acadpass") === "1") {
+      a.exam.passed = true; a.exam.graduatedAt = Date.now();
+      for (const k of ["written","chakra","clone","course","instructor"]) a.exam.scores[k] = a.exam.scores[k] || 100;
+      aSave();
+      console.log("[academy] dev acadpass hook fired");
+    }
+  } catch (e) {}
   return a;
 }
 function rankOf(level, passed) {
@@ -300,7 +311,7 @@ function open(system, save, sfx) {
           ex.attempts ? statRow("Attempts", String(ex.attempts)) : null,
           hh("p", {}, "Talk to Instructor Hayate inside your village's academy building. The exam has five stages: written, chakra control, clone technique, obstacle course, and the instructor bout."),
       hh("button", { class: "btn small primary", style: "margin-top:8px", onclick: () => {
-        import("./academyExam.js?v=e4").then((m) => m.startExam(null)).catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and try again."); });
+        import("./academyExam.js?v=e5").then((m) => m.startExam(null)).catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and try again."); });
       } }, a2.exam.passed ? "🎓 View diploma" : (a2.exam.stage > 0 ? "▶ Resume exam · Stage " + (a2.exam.stage + 1) : "🎓 Begin the graduation exam"))),
         hh("div", { class: "p1card" },
           hh("h4", {}, "🌀 Chakra natures"),
@@ -308,7 +319,10 @@ function open(system, save, sfx) {
           hh("p", {}, ex.passed || a2.natures.primary ? "Your natures are recorded on your profile." : "Your chakra natures reveal themselves during the exam's chakra demonstration — no scrolls, no spins.")),
         a2.squad.generated ? hh("div", { class: "p1card" },
           hh("h4", {}, "🤝 Squad " + (a2.squad.number || "")),
-          hh("p", {}, a2.squad.members.map(m => m.name).join(" · ") + (a2.squad.sensei ? " — under " + a2.squad.sensei.name : ""))) : null));
+          hh("p", {}, a2.squad.members.map(m => m.name).join(" · ") + (a2.squad.sensei ? " — under " + a2.squad.sensei.name : "")))
+        : (a2.exam.passed ? hh("div", { class: "p1card" },
+          hh("h4", {}, "🤝 Squad assignment ready"),
+          hh("p", {}, "Open the Squad tab to meet your squad."))) : null));
   }
 
   function renderNatureLine(a2) {
@@ -328,25 +342,9 @@ function open(system, save, sfx) {
   }
 
   function renderSquad(body) {
-    const a2 = acdOf(SAVE);
-    body.append(hh("div", { class: "p1title" }, "🤝 Your squad"));
-    if (!a2.squad.generated) {
-      body.append(hh("div", { class: "p1card" }, hh("p", {}, "You graduate with a three-man squad and a sensei. Finish the graduation exam first.")));
-      return;
-    }
-    for (const m of a2.squad.members) {
-      body.append(hh("div", { class: "p1card" },
-        hh("h4", {}, m.name),
-        statRow("Level", String(m.level || 1)),
-        statRow("Bond", (m.bond || 0) + " / 100"),
-        hh("p", {}, m.archetype || "")));
-    }
-    if (a2.squad.sensei) {
-      body.append(hh("div", { class: "p1card" },
-        hh("h4", {}, "🥷 " + a2.squad.sensei.name + " (sensei)"),
-        statRow("Bond", (a2.squad.sensei.bond || 0) + " / 100"),
-        hh("p", {}, a2.squad.sensei.personality || "")));
-    }
+    import("./squad.js?v=q1")
+      .then((m) => { try { m.render(body); } catch (e) { console.log("[academy] squad render err", e && e.message); toast("The squad panel hit a snag. Reopen it."); } })
+      .catch((e) => { console.log("[academy] squad load err", e && e.message); toast("The squad panel is stuck. Reload the page and try again."); });
   }
 
   let ov = $q("#acadOv");
@@ -378,7 +376,7 @@ function academyCenter(vid) { const p = ACADEMY_POS[vid]; return p ? [p[0], p[1]
 function examDialogButtons() {
   const a = acdOf();
   const load = (stage) => () => {
-    import("./academyExam.js?v=e4")
+    import("./academyExam.js?v=e5")
       .then((m) => { try { window.SL.hud && window.SL.hud.closeDialog && window.SL.hud.closeDialog(); } catch (e) {} m.startExam(stage); })
       .catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and talk to Hayate again."); });
   };
