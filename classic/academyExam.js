@@ -121,6 +121,7 @@ function cleanup(silent){
 }
 
 /* ---------- stage flow ---------- */
+let devStageUsed = false;
 export function startExam(stageIdx) {
   const c = window.__SL2academyCtx;
   if (!c) { toast("🎓 Academy exam unavailable — try re-entering the village."); return; }
@@ -129,9 +130,9 @@ export function startExam(stageIdx) {
   const a = c.acdOf();
   if (a.exam.passed) { showDiploma(); return; }
   let idx = stageIdx;
-  try { // dev-only: ?acadtest=<n>&stage=<1-5> jumps the exam to that stage for automated testing (never set on production URLs)
+  try { // dev-only: ?acadtest=<n>&stage=<1-5> jumps the exam to that stage for automated testing (never set on production URLs); applies once per page load
     const qp = new URLSearchParams(location.search);
-    if (qp.get("acadtest")) { const s = parseInt(qp.get("stage"), 10); if (s >= 1 && s <= 5) idx = s - 1; }
+    if (!devStageUsed && qp.get("acadtest")) { const s = parseInt(qp.get("stage"), 10); if (s >= 1 && s <= 5) { idx = s - 1; devStageUsed = true; } }
   } catch (e) {}
   const stage = Math.max(0, Math.min(4, idx == null ? a.exam.stage : idx));
   inputOff();
@@ -396,7 +397,9 @@ function runCourse(done){
 
 /* ============ STAGE 5: instructor bout ============ */
 function runBout(done){
-  const ROUNDS = 6, WINDOW = 1.6;
+  const ROUNDS = 6;
+  let WINDOW = 1.6;
+  try { const qp = new URLSearchParams(location.search); const bw = parseFloat(qp.get("boutwindow")); if (qp.get("acadtest") && bw >= 2 && bw <= 30) WINDOW = bw; } catch(e){} // dev-only bout window for automated testing
   let round = 0, right = 0, misses = 0;
   const { card } = examShell("Instructor Bout", "Exchange 1 of 6", false);
   const tell = hh("div", { class:"acadBoutTell" }, "Ready…");
