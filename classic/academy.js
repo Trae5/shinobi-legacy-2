@@ -288,7 +288,7 @@ function open(system, save, sfx) {
     const vid = (SAVE && (SAVE.at || SAVE.village)) || "leaf";
     const vill = VILLAGE_FULL[vid] || vid;
     const ex = a2.exam;
-    const examState = ex.passed ? "Passed 🎓" : (ex.stage > 0 ? "In progress — stage " + ex.stage + " of 5 (" + (EXAM_STAGE_NAME[EXAM_STAGES[ex.stage]] || "?") + ")" : "Not started");
+    const examState = ex.passed ? "Passed 🎓" : (ex.stage > 0 ? "In progress — stage " + (ex.stage + 1) + " of 5 (" + (EXAM_STAGE_NAME[EXAM_STAGES[ex.stage]] || "?") + ")" : "Not started");
     body.append(
       hh("div", { class: "p1title" }, "🏠 " + vill + " Ninja Academy"),
       hh("div", { class: "p1grid" },
@@ -300,7 +300,7 @@ function open(system, save, sfx) {
           ex.attempts ? statRow("Attempts", String(ex.attempts)) : null,
           hh("p", {}, "Talk to Instructor Hayate inside your village's academy building. The exam has five stages: written, chakra control, clone technique, obstacle course, and the instructor bout."),
       hh("button", { class: "btn small primary", style: "margin-top:8px", onclick: () => {
-        import("./academyExam.js?v=e2").then((m) => m.startExam(null)).catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and try again."); });
+        import("./academyExam.js?v=e3").then((m) => m.startExam(null)).catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and try again."); });
       } }, a2.exam.passed ? "🎓 View diploma" : (a2.exam.stage > 0 ? "▶ Resume exam · Stage " + (a2.exam.stage + 1) : "🎓 Begin the graduation exam"))),
         hh("div", { class: "p1card" },
           hh("h4", {}, "🌀 Chakra natures"),
@@ -317,7 +317,7 @@ function open(system, save, sfx) {
       wrap.append(hh("span", { class: "p1pill" }, NATURE_ICON[a2.natures.primary] + " " + NATURE_NAME[a2.natures.primary]));
       if (a2.natures.secondary) wrap.append(hh("span", { class: "p1pill" }, NATURE_ICON[a2.natures.secondary] + " " + NATURE_NAME[a2.natures.secondary]));
     } else {
-      const els = (SAVE && SAVE.elements) || [];
+      const els = ((SAVE && SAVE.elements) || []).filter(Boolean);
       if (els && els.length) {
         for (const el of els) wrap.append(hh("span", { class: "p1pill" }, (NATURE_ICON[el] || "🌀") + " " + (NATURE_NAME[el] || el)));
       } else {
@@ -378,7 +378,7 @@ function academyCenter(vid) { const p = ACADEMY_POS[vid]; return p ? [p[0], p[1]
 function examDialogButtons() {
   const a = acdOf();
   const load = (stage) => () => {
-    import("./academyExam.js?v=e2")
+    import("./academyExam.js?v=e3")
       .then((m) => { try { window.SL.hud && window.SL.hud.closeDialog && window.SL.hud.closeDialog(); } catch (e) {} m.startExam(stage); })
       .catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and talk to Hayate again."); });
   };

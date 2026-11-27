@@ -128,7 +128,12 @@ export function startExam(stageIdx) {
   if (!g || !g.player) { toast("🎓 Start the game first."); return; }
   const a = c.acdOf();
   if (a.exam.passed) { showDiploma(); return; }
-  const stage = Math.max(0, Math.min(4, stageIdx == null ? a.exam.stage : stageIdx));
+  let idx = stageIdx;
+  try { // dev-only: ?acadtest=<n>&stage=<1-5> jumps the exam to that stage for automated testing (never set on production URLs)
+    const qp = new URLSearchParams(location.search);
+    if (qp.get("acadtest")) { const s = parseInt(qp.get("stage"), 10); if (s >= 1 && s <= 5) idx = s - 1; }
+  } catch (e) {}
+  const stage = Math.max(0, Math.min(4, idx == null ? a.exam.stage : idx));
   inputOff();
   const NAME = c.EXAM_STAGE_NAME[c.EXAM_STAGES[stage]];
   const { ov, card } = examShell("Graduation Exam · Stage " + (stage+1) + " of 5", c.VILLAGE_FULL[c.vid()] + " Ninja Academy", true);
