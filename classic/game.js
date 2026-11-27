@@ -3917,5 +3917,5 @@ sum:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="current
 
 /* test hook (harmless in production): ?ptest=<btnId> auto-opens that menu panel */
 try{import("./phase6.js?v=p1135").then(m=>{m&&m.boot&&m.boot()}).catch(()=>{})}catch(e){}
-try{import("./academy.js?v=a5").then(m=>{window.__SL2academy=m||null;try{window.SL&&(window.SL.academy=m)}catch(e){}}).catch(()=>{})}catch(e){}
+try{import("./academy.js?v=a6").then(m=>{window.__SL2academy=m||null;try{window.SL&&(window.SL.academy=m)}catch(e){}}).catch(()=>{})}catch(e){}
 try{const q=new URLSearchParams(location.search).get("ptest");if(q){setTimeout(()=>{const b=document.getElementById(q);if(b)b.click();},3500);}}catch(e){}
