@@ -55,6 +55,7 @@ function aLoad() {
   if (!AROOT || typeof AROOT !== "object" || !AROOT.chars) AROOT = { v: AV, chars: {} };
 }
 function aSave() { try { if (!AROOT) aLoad(); localStorage.setItem(AKEY, JSON.stringify(AROOT)); } catch (e) { console.log("[academy] save err", e && e.message); } }
+aLoad(); // populate AROOT at module init so spawn/boot hooks see persisted state
 function freshAcd() {
   return {
     v: AV,
@@ -208,6 +209,7 @@ function injectCss() {
 window.__SL2academySpawn = function (save, vid) {
   try {
     if (!save) { console.log("[academy] spawn: no save"); return null; }
+    aLoad();
     const hasState = !!AROOT && !!AROOT.chars[keyOf(save)];
     const legacy = !hasState && save.pos; // existing players: keep their normal spawn
     console.log("[academy] spawn hook vid=" + vid + " pos=" + JSON.stringify(save.pos) + " created=" + save.created + " hasState=" + hasState + " legacy=" + legacy);
@@ -227,6 +229,7 @@ window.__SL2academyBoot = function (game) {
   try {
     const SL = window.SL; if (!SL) { console.log("[academy] boot: no window.SL"); return; }
     const save = SL.profile; if (!save) { console.log("[academy] boot: no profile"); return; }
+    aLoad();
     const hasState = !!AROOT && !!AROOT.chars[keyOf(save)];
     console.log("[academy] boot pos=" + JSON.stringify(save.pos) + " hasState=" + hasState + " spawnedFlag=" + JSON.stringify(AROOT && AROOT.chars[keyOf(save)] && AROOT.chars[keyOf(save)].acd && AROOT.chars[keyOf(save)].acd.spawned));
     if (!hasState && save.pos) return;          // legacy player: skip silently
