@@ -100,6 +100,7 @@ const EXAM_CSS = `
 let cssDone = false;
 function examShell(title, sub, closable) {
   try { window.SL.hud && window.SL.hud.closeDialog && window.SL.hud.closeDialog(); } catch(e){}
+  document.querySelectorAll("#acadExam").forEach(function(n){ n.remove(); });
   if (!cssDone) { const st = document.createElement("style"); st.id = "acadExamCss"; st.textContent = EXAM_CSS; document.head.append(st); cssDone = true; }
   const card = hh("div", { class:"acadCard" });
   const ov = hh("div", { id:"acadExam", class:"acadExam", role:"dialog", "aria-label":"Graduation exam" },
@@ -355,6 +356,8 @@ function runClone(done){
 /* ============ STAGE 4: obstacle course ============ */
 function runCourse(done){
   const c = window.__SL2academyCtx;
+  inputOn();
+  try { toast("🏃 WASD to run — follow the yellow arrow to each marker"); } catch(e){}
   const PAR = 80, N = 4;
   const center = c.academyCenter(c.vid());
   const angles = [0.6, 1.9, 3.2, 4.6], radii = [12, 15, 13, 16];
@@ -375,7 +378,7 @@ function runCourse(done){
     const t = (performance.now() - t0) / 1000;
     const w = wps[wi];
     const dx = w.x - p.x, dz = w.z - p.z, d = Math.hypot(dx, dz);
-    if (d < 2.6) {
+    if (d < 3.5) {
       wi++;
       if (wi >= wps.length) {
         cleanup(true);
