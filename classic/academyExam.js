@@ -250,7 +250,7 @@ function runWritten(done){
   card.append(qEl, oEl);
   const paint = () => {
     const q = qs[i];
-    card.querySelector(".acadExamSub").textContent = "Question " + (i+1) + " of 5";
+    document.querySelector("#acadExam .acadExamSub").textContent = "Question " + (i+1) + " of 5";
     qEl.textContent = q.q;
     oEl.innerHTML = "";
     q.o.forEach((opt, oi) => oEl.append(hh("button", { class:"acadOpt", onclick:()=>pick(oi) }, opt)));
@@ -314,7 +314,7 @@ function runClone(done){
   const next = () => {
     round++;
     if (round > ROUNDS) { cleanup(true); done(right / ROUNDS * 100); return; }
-    card.querySelector(".acadExamSub").textContent = "Round " + round + " of " + ROUNDS;
+    document.querySelector("#acadExam .acadExamSub").textContent = "Round " + round + " of " + ROUNDS;
     stage.innerHTML = "";
     const n = 4, real = (Math.random()*n)|0;
     const order = Array.from({length:n}, (_,k)=>k);
@@ -402,7 +402,7 @@ function runBout(done){
     round++;
     if (round > ROUNDS) { cleanup(true); done(right / ROUNDS * 100); return; }
     const t = TELLS[(Math.random()*TELLS.length)|0];
-    card.querySelector(".acadExamSub").textContent = "Exchange " + round + " of " + ROUNDS;
+    document.querySelector("#acadExam .acadExamSub").textContent = "Exchange " + round + " of " + ROUNDS;
     tell.textContent = t.tell;
     row.innerHTML = "";
     const btns = BOUT_BTNS.map(b => hh("button", { class:"acadBoutBtn", onclick:()=>answer(b.k) }, hh("b", {}, b.glyph), hh("span", {}, b.k)));
