@@ -298,7 +298,10 @@ function open(system, save, sfx) {
           statRow("Uniform", a2.spawned ? (ex.passed ? "Graduated — headband earned" : "Academy uniform") : "—"),
           statRow("Graduation exam", examState),
           ex.attempts ? statRow("Attempts", String(ex.attempts)) : null,
-          hh("p", {}, "Talk to Instructor Hayate inside your village's academy building. The exam has five stages: written, chakra control, clone technique, obstacle course, and the instructor bout.")),
+          hh("p", {}, "Talk to Instructor Hayate inside your village's academy building. The exam has five stages: written, chakra control, clone technique, obstacle course, and the instructor bout."),
+      hh("button", { class: "btn small primary", style: "margin-top:8px", onclick: () => {
+        import("./academyExam.js?v=e1").then((m) => m.startExam(null)).catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and try again."); });
+      } }, a2.exam.passed ? "🎓 View diploma" : (a2.exam.stage > 0 ? "▶ Resume exam · Stage " + (a2.exam.stage + 1) : "🎓 Begin the graduation exam"))),
         hh("div", { class: "p1card" },
           hh("h4", {}, "🌀 Chakra natures"),
           renderNatureLine(a2),
