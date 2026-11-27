@@ -81,9 +81,10 @@ function acdOf(save) {
   a.chunin = a.chunin || freshAcd().chunin;
   return a;
 }
-function rankOf(level) {
+function rankOf(level, passed) {
   let r = RANKS[0];
   for (const x of RANKS) if (level >= x.minLevel) r = x;
+  if (passed && r === RANKS[0]) r = RANKS[1];
   return r.name;
 }
 
@@ -250,7 +251,10 @@ window.__SL2academyScene = function (game, api) {
     const L = academyLayout(vid);
     if (!L) return;
     for (const def of academyNpcs(L, vid)) {
-      try { api.spawnNpc(def); } catch (e) { console.log("[academy] npc", def.id, e && e.message); }
+      try {
+        const q = api.spawnNpc(def);
+        if (q && def.id === "aca_sensei_" + vid) q.vxExtra = () => examDialogButtons();
+      } catch (e) { console.log("[academy] npc", def.id, e && e.message); }
     }
   } catch (e) { console.log("[academy] scene err", e && e.message); }
 };
@@ -290,7 +294,7 @@ function open(system, save, sfx) {
       hh("div", { class: "p1grid" },
         hh("div", { class: "p1card" },
           hh("h4", {}, "🥋 Your record"),
-          statRow("Rank", rankOf(pLv())),
+          statRow("Rank", rankOf(pLv(), acdOf().exam.passed)),
           statRow("Uniform", a2.spawned ? (ex.passed ? "Graduated — headband earned" : "Academy uniform") : "—"),
           statRow("Graduation exam", examState),
           ex.attempts ? statRow("Attempts", String(ex.attempts)) : null,
@@ -348,7 +352,7 @@ function open(system, save, sfx) {
     hh("div", { class: "p1m", id: "acadM" },
       hh("div", { class: "p1head" },
         hh("h2", {}, "Ninja Academy"),
-        hh("span", { class: "p1who" }, pName() + " · " + rankOf(pLv())),
+        hh("span", { class: "p1who" }, pName() + " · " + rankOf(pLv(), acdOf().exam.passed)),
         hh("button", { class: "p1x", "aria-label": "Close", onclick: closeAcademy }, "✕")),
       hh("div", { class: "p1tabs" },
         hh("button", { class: "p1tab on", id: "acadTab-academy", onclick: () => { V_ui(); rerender("academy"); } }, "🏫 Academy"),
@@ -363,6 +367,34 @@ function open(system, save, sfx) {
   rerender("academy");
 }
 function closeAcademy() { const ov = $q("#acadOv"); if (ov) ov.remove(); }
+
+/* ---------- academy center (world coords) ---------- */
+function academyCenter(vid) { const p = ACADEMY_POS[vid]; return p ? [p[0], p[1]] : null; }
+
+/* ---------- exam dialog buttons (Hayate's dialog extra) ---------- */
+function examDialogButtons() {
+  const a = acdOf();
+  const load = (stage) => () => {
+    import("./academyExam.js?v=e1")
+      .then((m) => { try { window.SL.hud && window.SL.hud.closeDialog && window.SL.hud.closeDialog(); } catch (e) {} m.startExam(stage); })
+      .catch((e) => { console.log("[academy] exam load err", e && e.message); toast("The exam room is stuck. Reload the page and talk to Hayate again."); });
+  };
+  if (a.exam.passed) {
+    return [hh("button", { class: "btn small primary", onclick: load(null) }, "🎓 View diploma")];
+  }
+  const st = a.exam.stage || 0;
+  const label = st === 0 ? "🎓 Begin the graduation exam" : "▶ Resume exam · Stage " + (st + 1);
+  return [hh("button", { class: "btn small primary", onclick: load(st) }, label)];
+}
+
+/* ---------- shared context for the exam module ---------- */
+window.__SL2academyCtx = {
+  acdOf, aSave, keyOf, rankOf, pName,
+  academyLayout, academyCenter,
+  VILLAGE_FULL, NATURES, NATURE_NAME, NATURE_ICON,
+  EXAM_STAGES, EXAM_STAGE_NAME, RANKS,
+  vid: () => { const sv = window.SL && window.SL.profile; return sv ? (sv.at || sv.village || "leaf") : "leaf"; }
+};
 
 /* ---------- public api for later stages ---------- */
 const Academy = {
