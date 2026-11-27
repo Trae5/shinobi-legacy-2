@@ -322,7 +322,7 @@ function open(system, save, sfx) {
           hh("p", {}, a2.squad.members.map(m => m.name).join(" · ") + (a2.squad.sensei ? " — under " + a2.squad.sensei.name : "")))
         : (a2.exam.passed ? hh("div", { class: "p1card" },
           hh("h4", {}, "🤝 Squad assignment ready"),
-          hh("p", {}, "Open the Squad tab to meet your squad."))) : null));
+          hh("p", {}, "Open the Squad tab to meet your squad.")) : null)));
   }
 
   function renderNatureLine(a2) {
