@@ -207,15 +207,17 @@ function injectCss() {
 /* Spawn override: fresh players spawn INSIDE their village's academy. */
 window.__SL2academySpawn = function (save, vid) {
   try {
-    if (!save) return null;
+    if (!save) { console.log("[academy] spawn: no save"); return null; }
     const hasState = !!AROOT && !!AROOT.chars[keyOf(save)];
     const legacy = !hasState && save.pos; // existing players: keep their normal spawn
+    console.log("[academy] spawn hook vid=" + vid + " pos=" + JSON.stringify(save.pos) + " created=" + save.created + " hasState=" + hasState + " legacy=" + legacy);
     if (legacy) return null;
     const a = acdOf(save);
     if (a.spawned) return null;                 // intro done → normal spawns
     if (a.exam.passed) return null;
     const L = academyLayout(vid);
-    if (!L) return null;
+    if (!L) { console.log("[academy] spawn: no layout for " + vid); return null; }
+    console.log("[academy] spawn override ->", JSON.stringify(L.spawn));
     return { x: L.spawn.x, z: L.spawn.z, yaw: L.spawn.yaw };
   } catch (e) { console.log("[academy] spawn err", e && e.message); return null; }
 };
@@ -223,9 +225,10 @@ window.__SL2academySpawn = function (save, vid) {
 /* Boot: after the player is spawned, run the intro for fresh players. */
 window.__SL2academyBoot = function (game) {
   try {
-    const SL = window.SL; if (!SL) return;
-    const save = SL.profile; if (!save) return;
+    const SL = window.SL; if (!SL) { console.log("[academy] boot: no window.SL"); return; }
+    const save = SL.profile; if (!save) { console.log("[academy] boot: no profile"); return; }
     const hasState = !!AROOT && !!AROOT.chars[keyOf(save)];
+    console.log("[academy] boot pos=" + JSON.stringify(save.pos) + " hasState=" + hasState + " spawnedFlag=" + JSON.stringify(AROOT && AROOT.chars[keyOf(save)] && AROOT.chars[keyOf(save)].acd && AROOT.chars[keyOf(save)].acd.spawned));
     if (!hasState && save.pos) return;          // legacy player: skip silently
     const a = acdOf(save);
     if (a.spawned || a.exam.passed) return;
